@@ -28,7 +28,7 @@ from kivy.core.window import Window
 from pidev.kivy import DPEAButton
 from pidev.kivy import PauseScreen
 from time import sleep
-import RPi.GPIO as GPIO 
+import RPi.GPIO as GPIO
 from pidev.stepper import stepper
 from pidev.Cyprus_Commands import Cyprus_Commands_RPi as cyprus
 
@@ -116,15 +116,11 @@ class MainScreen(Screen):
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
 
-    def resetColors(self):
-        self.ids.gate.color = YELLOW
-        self.ids.staircase.color = YELLOW
-        self.ids.ramp.color = YELLOW
-        self.ids.auto.color = BLUE
     
     def quit(self):
         print("Exit")
         MyApp().stop()
+
 
 sm.add_widget(MainScreen(name = 'main'))
 
