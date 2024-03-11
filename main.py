@@ -51,8 +51,8 @@ HOME = True
 TOP = False
 OPEN = False
 CLOSE = True
-YELLOW = .180, 0.188, 0.980, 1
-BLUE = 0.917, 0.796, 0.380, 1
+PINK = 1, 0.3, 0.5, 1
+BLUE = 0, 0, 1, 1
 DEBOUNCE = 0.1
 INIT_RAMP_SPEED = 2
 RAMP_LENGTH = 725
@@ -77,6 +77,11 @@ Window.clearcolor = (.1, .1,.1, 1) # (WHITE)
 # ////////////////////////////////////////////////////////////////
 sm = ScreenManager()
 
+# SERVO
+dpiComputer = DPiComputer()
+dpiComputer.initialize()
+
+
 # ////////////////////////////////////////////////////////////////
 # //                       MAIN FUNCTIONS                       //
 # //             SHOULD INTERACT DIRECTLY WITH HARDWARE         //
@@ -97,12 +102,18 @@ class MainScreen(Screen):
     rampSpeed = INIT_RAMP_SPEED
     staircaseSpeed = 40
 
+
+    # USE THREADING
+    # THREAD THREAD THREAD
+
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         self.initialize()
 
     def toggleGate(self):
         print("Open and Close gate here")
+        self.openGate()
+        # idk how to stop it
 
     def toggleStaircase(self):
         print("Turn on and off staircase here")
@@ -122,13 +133,18 @@ class MainScreen(Screen):
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
 
-    # def resetColors(self):
-    #     self.ids.gate.color = YELLOW
-    #     self.ids.staircase.color = YELLOW
-    #     self.ids.ramp.color = YELLOW
-    #     self.ids.auto.color = BLUE
+    def resetColors(self):
+        self.ids.gate.color = PINK
+        self.ids.staircase.color = PINK
+        self.ids.ramp.color = PINK
+        self.ids.auto.color = BLUE
 
     def openGate(self):
+        i = 1
+        servo_number = 1
+        for i in range(0, 90, 1):
+            dpiComputer.writeServo(servo_number, i)
+            sleep(.05)
 
     
     def quit(self):
