@@ -1,7 +1,6 @@
 # ////////////////////////////////////////////////////////////////
 # //                     IMPORT STATEMENTS                      //
 # ////////////////////////////////////////////////////////////////
-
 import math
 import sys
 import time
@@ -28,9 +27,18 @@ from kivy.core.window import Window
 from pidev.kivy import DPEAButton
 from pidev.kivy import PauseScreen
 from time import sleep
-import RPi.GPIO as GPIO
-from pidev.stepper import stepper
-from pidev.Cyprus_Commands import Cyprus_Commands_RPi as cyprus
+from dpeaDPi.DPiComputer import *
+from dpeaDPi.DPiStepper import *
+
+# ////////////////////////////////////////////////////////////////
+# //                     HARDWARE SETUP                         //
+# ////////////////////////////////////////////////////////////////
+"""Stepper Motor goes into MOTOR 0 )
+    Limit Switch associated with Stepper Motor goes into HOME 0
+    One Sensor goes into IN 0
+    Another Sensor goes into IN 1
+    Servo Motor associated with the Gate goes into SERVO 1
+    Motor Controller for DC Motor associated with the Stairs goes into SERVO 0"""
 
 
 # ////////////////////////////////////////////////////////////////
@@ -62,20 +70,18 @@ class MyApp(App):
 Builder.load_file('main.kv')
 Window.clearcolor = (.1, .1,.1, 1) # (WHITE)
 
-cyprus.open_spi()
+
 
 # ////////////////////////////////////////////////////////////////
 # //                    SLUSH/HARDWARE SETUP                    //
 # ////////////////////////////////////////////////////////////////
 sm = ScreenManager()
-ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
-             steps_per_unit=200, speed=INIT_RAMP_SPEED)
 
 # ////////////////////////////////////////////////////////////////
 # //                       MAIN FUNCTIONS                       //
 # //             SHOULD INTERACT DIRECTLY WITH HARDWARE         //
 # ////////////////////////////////////////////////////////////////
-	
+
 # ////////////////////////////////////////////////////////////////
 # //        DEFINE MAINSCREEN CLASS THAT KIVY RECOGNIZES        //
 # //                                                            //
@@ -86,7 +92,7 @@ ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_cu
 # //      SHOULD NOT INTERACT DIRECTLY WITH THE HARDWARE        //
 # ////////////////////////////////////////////////////////////////
 class MainScreen(Screen):
-    version = cyprus.read_firmware_version()
+
     staircaseSpeedText = '0'
     rampSpeed = INIT_RAMP_SPEED
     staircaseSpeed = 40
@@ -116,11 +122,18 @@ class MainScreen(Screen):
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
 
+    # def resetColors(self):
+    #     self.ids.gate.color = YELLOW
+    #     self.ids.staircase.color = YELLOW
+    #     self.ids.ramp.color = YELLOW
+    #     self.ids.auto.color = BLUE
+
+    def openGate(self):
+
     
     def quit(self):
         print("Exit")
         MyApp().stop()
-
 
 sm.add_widget(MainScreen(name = 'main'))
 
@@ -129,4 +142,3 @@ sm.add_widget(MainScreen(name = 'main'))
 # ////////////////////////////////////////////////////////////////
 
 MyApp().run()
-cyprus.close_spi()
