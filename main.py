@@ -113,7 +113,8 @@ class MainScreen(Screen):
     def toggleGate(self):
         print("Open and Close gate here")
         self.openGate()
-        # idk how to stop it
+        self.closeGate()
+
 
     def toggleStaircase(self):
         print("Turn on and off staircase here")
@@ -142,9 +143,16 @@ class MainScreen(Screen):
     def openGate(self):
         i = 1
         servo_number = 1
-        for i in range(0, 90, 1):
+        for i in range(100, 0, -1):
             dpiComputer.writeServo(servo_number, i)
             sleep(.05)
+    def closeGate(self):
+        i = 1
+        servo_number = 1
+        for i in range(100, 0, -1):
+            dpiComputer.writeServo(servo_number, i)
+            sleep(.05)
+
 
     
     def quit(self):
