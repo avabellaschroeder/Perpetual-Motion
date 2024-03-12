@@ -118,7 +118,18 @@ class MainScreen(Screen):
 
     def toggleStaircase(self):
         print("Turn on and off staircase here")
-        
+
+        if self.ids.staircase.text == "Staircase On":
+            self.ids.staircase.text = "Staircase Off"
+            self.moveStairs()
+            print("success")
+
+        else:
+            self.ids.staircase.text = "Staircase On"
+            self.stopStairs()
+            print("stop")
+
+
     def toggleRamp(self):
         print("Move ramp up and down here")
         
@@ -133,6 +144,7 @@ class MainScreen(Screen):
         
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
+        # self.closeGate()
 
     def resetColors(self):
         self.ids.gate.color = PINK
@@ -141,17 +153,30 @@ class MainScreen(Screen):
         self.ids.auto.color = BLUE
 
     def openGate(self):
-        i = 1
+        i = 0
         servo_number = 1
         for i in range(100, 0, -1):
             dpiComputer.writeServo(servo_number, i)
             sleep(.05)
     def closeGate(self):
-        i = 1
+        i = 0
         servo_number = 1
         for i in range(100, 0, -1):
             dpiComputer.writeServo(servo_number, i)
             sleep(.05)
+
+    def moveStairs(self):
+        i = 0
+        servo_number = 0
+        for i in range(100, 0, -1):
+            dpiComputer.writeServo(servo_number, i)
+            sleep(.5)
+    def stopStairs(self):
+        i = 0
+        servo_number = 0
+        for i in range(90):
+            dpiComputer.writeServo(servo_number, i)
+            sleep(0.0)
 
 
     
