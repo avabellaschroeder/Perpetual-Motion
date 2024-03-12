@@ -85,6 +85,7 @@
             center_x: root.width * 0.6
             y: root.height * 0.15
             size_hint_x: 7
+            sensitivity: 'handle'
             on_value: root.setRampSpeed(self.value)
 
         Slider:
@@ -97,6 +98,7 @@
             center_x: root.width * 0.6
             y: root.height * 0.05
             size_hint_x: 7
+            sensitivity: 'handle'
             on_value: root.setStaircaseSpeed(self.value)
 
 
