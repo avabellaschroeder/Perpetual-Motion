@@ -54,7 +54,7 @@ CLOSE = True
 PINK = 1, 0.3, 0.5, 1
 BLUE = 0, 0, 1, 1
 DEBOUNCE = 0.1
-INIT_RAMP_SPEED = 2
+INIT_RAMP_SPEED = 10
 RAMP_LENGTH = 725
 
 
@@ -69,7 +69,6 @@ class MyApp(App):
 
 Builder.load_file('main.kv')
 Window.clearcolor = (.1, .1,.1, 1) # (WHITE)
-
 
 
 # ////////////////////////////////////////////////////////////////
@@ -93,9 +92,8 @@ dpiComputer.initialize()
 class MainScreen(Screen):
 
     staircaseSpeedText = '0'
-    rampSpeed = INIT_RAMP_SPEED
     staircaseSpeed = 40
-
+    rampSpeed = INIT_RAMP_SPEED
 
     # USE THREADING
     # THREAD THREAD THREAD
@@ -107,7 +105,6 @@ class MainScreen(Screen):
     def toggleGate(self):
         print("Open and Close gate here")
         threading.Thread(target=self.toggleGateThread).start()
-
 
     def toggleStaircase(self):
         print("Turn on and off staircase here")
@@ -128,6 +125,7 @@ class MainScreen(Screen):
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
         # self.closeGate()
+        # self.stopStairs()
 
     def resetColors(self):
         self.ids.gate.color = PINK
@@ -143,19 +141,42 @@ class MainScreen(Screen):
     def openGate(self):
         i = 0
         servo_number = 1
-        for i in range(100, 0, -1):
+        for i in range(100):
             dpiComputer.writeServo(servo_number, i)
-            sleep(.05)
+            sleep(.03)
     def closeGate(self):
         i = 0
         servo_number = 1
         for i in range(100, 0, -1):
             dpiComputer.writeServo(servo_number, i)
-            sleep(.05)
+            sleep(.02)
     def toggleGateThread(self):
-        self.openGate()
-        self.closeGate()
+        # self.openGate()
+        # self.closeGate()
+        global OPEN
+        if OPEN == False:
+            OPEN = True
+            print("a")
+            self.ids.gate.text = 'Close Gate'
+            self.openGate()
+        else:
+            OPEN = False
+            self.ids.gate.text = 'Open Gate'
+            self.closeGate()
+            print("b")
 # ////////// stair shtuff ////////////
+    def toggleStaircaseThread(self):
+        global ON
+        if ON == False:
+            ON = True
+            print("moving stairs")
+            self.ids.staircase.text = 'Staircase Off'
+            self.moveStairs()
+        else:
+            ON = False
+            self.ids.staircase.text = 'Staircase On'
+            self.stopStairs()
+            print("stopped stairs")
     def moveStairs(self):
         i = 0
         servo_number = 0
@@ -166,23 +187,16 @@ class MainScreen(Screen):
         servo_number = 0
         dpiComputer.writeServo(servo_number, 90)
         sleep(.2)
-    def toggleStaircaseThread(self):
-        global ON
-        if ON == False:
-            ON = True
-            print("moving stairs")
-            self.ids.staircase.text = 'Staircase On'
-            self.moveStairs()
-            print("done")
-        else:
-            ON = False
-            self.ids.staircase.text = 'Staircase Off'
-            self.stopStairs()
-            print("stopped stairs")
 # ////////// ramp ////////////
+#     def toggleRampThread(self):
+#     if blah
+#
+    def rampUp(self):
+        pass
+    def rampDown(self):
+        pass
 
-
-    
+# //////////////////////////////////
     def quit(self):
         print("Exit")
         MyApp().stop()
