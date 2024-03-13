@@ -81,12 +81,6 @@ sm = ScreenManager()
 dpiComputer = DPiComputer()
 dpiComputer.initialize()
 
-
-# ////////////////////////////////////////////////////////////////
-# //                       MAIN FUNCTIONS                       //
-# //             SHOULD INTERACT DIRECTLY WITH HARDWARE         //
-# ////////////////////////////////////////////////////////////////
-
 # ////////////////////////////////////////////////////////////////
 # //        DEFINE MAINSCREEN CLASS THAT KIVY RECOGNIZES        //
 # //                                                            //
@@ -112,23 +106,12 @@ class MainScreen(Screen):
 
     def toggleGate(self):
         print("Open and Close gate here")
-        self.openGate()
-        self.closeGate()
+        threading.Thread(target=self.toggleGateThread).start()
 
 
     def toggleStaircase(self):
         print("Turn on and off staircase here")
-
-        if self.ids.staircase.text == "Staircase On":
-            self.ids.staircase.text = "Staircase Off"
-            self.moveStairs()
-            print("success")
-
-        else:
-            self.ids.staircase.text = "Staircase On"
-            self.stopStairs()
-            print("stop")
-
+        threading.Thread(target=self.toggleStaircaseThread).start()
 
     def toggleRamp(self):
         print("Move ramp up and down here")
@@ -152,6 +135,11 @@ class MainScreen(Screen):
         self.ids.ramp.color = PINK
         self.ids.auto.color = BLUE
 
+# ////////////////////////////////////////////////////////////////
+# //                       MAIN FUNCTIONS                       //
+# //             SHOULD INTERACT DIRECTLY WITH HARDWARE         //
+# ////////////////////////////////////////////////////////////////
+# ////////// gate things ////////////
     def openGate(self):
         i = 0
         servo_number = 1
@@ -164,19 +152,34 @@ class MainScreen(Screen):
         for i in range(100, 0, -1):
             dpiComputer.writeServo(servo_number, i)
             sleep(.05)
-
+    def toggleGateThread(self):
+        self.openGate()
+        self.closeGate()
+# ////////// stair shtuff ////////////
     def moveStairs(self):
         i = 0
         servo_number = 0
         for i in range(100, 0, -1):
             dpiComputer.writeServo(servo_number, i)
-            sleep(.5)
+            sleep(.1)
     def stopStairs(self):
-        i = 0
         servo_number = 0
-        for i in range(90):
-            dpiComputer.writeServo(servo_number, i)
-            sleep(0.0)
+        dpiComputer.writeServo(servo_number, 90)
+        sleep(.2)
+    def toggleStaircaseThread(self):
+        global ON
+        if ON == False:
+            ON = True
+            print("moving stairs")
+            self.ids.staircase.text = 'Staircase On'
+            self.moveStairs()
+            print("done")
+        else:
+            ON = False
+            self.ids.staircase.text = 'Staircase Off'
+            self.stopStairs()
+            print("stopped stairs")
+# ////////// ramp ////////////
 
 
     
