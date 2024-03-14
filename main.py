@@ -79,6 +79,8 @@ sm = ScreenManager()
 # SERVO
 dpiComputer = DPiComputer()
 dpiComputer.initialize()
+# Stepper
+dpiStepper = DPiStepper()
 
 # ////////////////////////////////////////////////////////////////
 # //        DEFINE MAINSCREEN CLASS THAT KIVY RECOGNIZES        //
@@ -112,7 +114,8 @@ class MainScreen(Screen):
 
     def toggleRamp(self):
         print("Move ramp up and down here")
-        
+        threading.Thread(target=self.toggleRampThread).start()
+
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
         
@@ -137,7 +140,7 @@ class MainScreen(Screen):
 # //                       MAIN FUNCTIONS                       //
 # //             SHOULD INTERACT DIRECTLY WITH HARDWARE         //
 # ////////////////////////////////////////////////////////////////
-# ////////// gate things ////////////
+# ///////////// gate things //////////////
     def openGate(self):
         i = 0
         servo_number = 1
@@ -164,7 +167,7 @@ class MainScreen(Screen):
             self.ids.gate.text = 'Open Gate'
             self.closeGate()
             print("b")
-# ////////// stair shtuff ////////////
+# ///////////// stair shtuff //////////////
     def toggleStaircaseThread(self):
         global ON
         if ON == False:
@@ -187,12 +190,23 @@ class MainScreen(Screen):
         servo_number = 0
         dpiComputer.writeServo(servo_number, 90)
         sleep(.2)
-# ////////// ramp ////////////
-#     def toggleRampThread(self):
-#     if blah
-#
+# ///////////// ramp ///////////////
+    def toggleRampThread(self):
+        print("threading fn")
+        self.rampUp()
+
     def rampUp(self):
-        pass
+        # global INIT_RAMP_SPEED
+        stepper_num = 0
+        dpiStepper.enableMotors(True)
+        dpiStepper.setBoardNumber(0)
+        # set stepper number & enable motors
+        dpiStepper.setCurrentPositionInSteps(stepper_num, 0)
+        # dpiStepper.setSpeedInStepsPerSecond(stepper_num, INIT_RAMP_SPEED)
+        # set position and speed
+        dpiStepper.moveToAbsolutePositionInSteps(0, -3000, waitToFinishFlg=True)
+        dpiStepper.enableMotors(False)
+        print("yooooooooo")
     def rampDown(self):
         pass
 
