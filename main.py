@@ -81,6 +81,8 @@ dpiComputer = DPiComputer()
 dpiComputer.initialize()
 # Stepper
 dpiStepper = DPiStepper()
+microstepping = 8
+dpiStepper.setMicrostepping(microstepping)
 
 # ////////////////////////////////////////////////////////////////
 # //        DEFINE MAINSCREEN CLASS THAT KIVY RECOGNIZES        //
@@ -192,9 +194,17 @@ class MainScreen(Screen):
         sleep(.2)
 # ///////////// ramp ///////////////
     def toggleRampThread(self):
-        print("threading fn")
-        self.rampUp()
-
+        print("ramp threading fn")
+        global HOME
+        if HOME == True:
+            HOME = False
+            print("moving stairs")
+            self.rampUp()
+            self.ids.ramp.text = 'move down'
+        else:
+            HOME = True
+            self.rampDown()
+            self.ids.ramp.text = 'go up'
     def rampUp(self):
         # global INIT_RAMP_SPEED
         stepper_num = 0
@@ -204,11 +214,20 @@ class MainScreen(Screen):
         dpiStepper.setCurrentPositionInSteps(stepper_num, 0)
         # dpiStepper.setSpeedInStepsPerSecond(stepper_num, INIT_RAMP_SPEED)
         # set position and speed
-        dpiStepper.moveToAbsolutePositionInSteps(0, -3000, waitToFinishFlg=True)
+        dpiStepper.moveToAbsolutePositionInSteps(0, -45200, waitToFinishFlg=True)
         dpiStepper.enableMotors(False)
-        print("yooooooooo")
+        print("up")
     def rampDown(self):
-        pass
+        stepper_num = 0
+        dpiStepper.enableMotors(True)
+        dpiStepper.setBoardNumber(0)
+        # set stepper number & enable motors
+        dpiStepper.setCurrentPositionInSteps(stepper_num, 0)
+        # dpiStepper.setSpeedInStepsPerSecond(stepper_num, INIT_RAMP_SPEED)
+        # set position and speed
+        dpiStepper.moveToAbsolutePositionInSteps(0, 45200, waitToFinishFlg=True)
+        dpiStepper.enableMotors(False)
+        print("moved down")
 
 # //////////////////////////////////
     def quit(self):
