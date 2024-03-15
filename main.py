@@ -212,7 +212,8 @@ class MainScreen(Screen):
         dpiStepper.setBoardNumber(0)
         # set stepper number & enable motors
         dpiStepper.setCurrentPositionInSteps(stepper_num, 0)
-        # dpiStepper.setSpeedInStepsPerSecond(stepper_num, INIT_RAMP_SPEED)
+        speed_in_steps_per_sec = 3200
+        dpiStepper.setSpeedInStepsPerSecond(stepper_num, speed_in_steps_per_sec)
         # set position and speed
         dpiStepper.moveToAbsolutePositionInSteps(0, -45200, waitToFinishFlg=True)
         dpiStepper.enableMotors(False)
@@ -220,12 +221,10 @@ class MainScreen(Screen):
     def rampDown(self):
         stepper_num = 0
         dpiStepper.enableMotors(True)
-        dpiStepper.setBoardNumber(0)
-        # set stepper number & enable motors
-        dpiStepper.setCurrentPositionInSteps(stepper_num, 0)
-        # dpiStepper.setSpeedInStepsPerSecond(stepper_num, INIT_RAMP_SPEED)
-        # set position and speed
-        dpiStepper.moveToAbsolutePositionInSteps(0, 45200, waitToFinishFlg=True)
+        speed_in_steps_per_sec = 3200 #self.ids.rampSpeed.value
+        MaxDistanceToMoveInSteps = 45200
+        dpiStepper.moveToHomeInSteps(0, 1, speed_in_steps_per_sec,
+                                           MaxDistanceToMoveInSteps)
         dpiStepper.enableMotors(False)
         print("moved down")
 
