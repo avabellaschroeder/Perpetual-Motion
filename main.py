@@ -119,7 +119,9 @@ class MainScreen(Screen):
 
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
-        
+        self.initialize()
+        sleep(.01)
+        threading.Thread(target=self.runSensors).start()
     def setRampSpeed(self, speed):
         print("Set the ramp speed and update slider text")
         
@@ -128,8 +130,9 @@ class MainScreen(Screen):
         
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
-        # self.closeGate()
-        # self.stopStairs()
+        self.closeGate()
+        self.stopStairs()
+        self.rampDown()
 
     def resetColors(self):
         self.ids.gate.color = PINK
@@ -155,8 +158,6 @@ class MainScreen(Screen):
             dpiComputer.writeServo(servo_number, i)
             sleep(.02)
     def toggleGateThread(self):
-        # self.openGate()
-        # self.closeGate()
         global OPEN
         if OPEN == False:
             OPEN = True
@@ -233,8 +234,38 @@ class MainScreen(Screen):
 
     # def rampSpeed
     #     speed_in_steps_per_sec = int(self.ids.rampSpeed.value)
+# ///////////////// auto fn & sensors ///////////
+    def runSensors(self):
+        self.bottomSensor()
+        # self.topSensor()
+    def bottomSensor(self):
+        value = dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)
+        dpiComputer.writeDigitalOut(dpiComputer.OUT_CONNECTOR__OUT_2, value)
+        blah = 0
+        while blah < 10:
+            blah + 1
+            if (dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)):
+                sleep(10)
+                if (dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)):  # a little debounce logic
+                    print("Input 0 is HIGH")
+            else:
+                print("Input 0 is LOW")
+                threading.Thread(target=self.rampUp).start()
+            if blah == 10:
+                print("no ball found. put one in and try again")
+    def topSensor(self):
+        value = dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_1)
+        dpiComputer.writeDigitalOut(dpiComputer.OUT_CONNECTOR__OUT_2, value)
+        while True:
+            if (dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_1)):
+                sleep(.5)
+                if (dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_1)):  # a little debounce logic
+                    print("Input 1 is HIGH")
+            else:
+                print("Input 1 is LOW")
+                threading.Thread(target=self.moveStairs).start()
 
-# //////////////////////////////////
+
     def quit(self):
         print("Exit")
         MyApp().stop()
