@@ -57,7 +57,6 @@ DEBOUNCE = 0.1
 INIT_RAMP_SPEED = 10
 RAMP_LENGTH = 725
 
-
 # ////////////////////////////////////////////////////////////////
 # //            DECLARE APP CLASS AND SCREENMANAGER             //
 # //                     LOAD KIVY FILE                         //
@@ -206,26 +205,34 @@ class MainScreen(Screen):
             self.rampDown()
             self.ids.ramp.text = 'go up'
     def rampUp(self):
-        # global INIT_RAMP_SPEED
         stepper_num = 0
         dpiStepper.enableMotors(True)
         dpiStepper.setBoardNumber(0)
         # set stepper number & enable motors
-        dpiStepper.setCurrentPositionInSteps(stepper_num, 0)
-        speed_in_steps_per_sec = 8000
-        dpiStepper.setSpeedInStepsPerSecond(stepper_num, speed_in_steps_per_sec)
-        # set position and speed
-        dpiStepper.moveToAbsolutePositionInSteps(0, -45300, waitToFinishFlg=True)
+        gear_ratio = 1
+        motorStepPerRevolution = 1600 * gear_ratio
+        dpiStepper.setStepsPerRevolution(stepper_num, motorStepPerRevolution)
+        # set steps per rev
+        dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0)
+
+        speed_in_revolutions_per_sec = int(self.ids.rampSpeed.value)
+        dpiStepper.setSpeedInRevolutionsPerSecond(stepper_num, speed_in_revolutions_per_sec)
+        accel_in_revolutions_per_sec_per_sec = 2.0
+        dpiStepper.setAccelerationInRevolutionsPerSecondPerSecond(stepper_num, accel_in_revolutions_per_sec_per_sec)
+        # set position and speed and accel
+        dpiStepper.moveToAbsolutePositionInRevolutions(0, -28.7, waitToFinishFlg=True)
         dpiStepper.enableMotors(False)
         print("up")
     def rampDown(self):
-        stepper_num = 0
         dpiStepper.enableMotors(True)
-        speed_in_steps_per_sec = 6000 #self.ids.rampSpeed.value
-        MaxDistanceToMoveInSteps = 45500
+        speed_in_steps_per_sec = 5500 #self.ids.rampSpeed.value
+        MaxDistanceToMoveInSteps = 46000
         dpiStepper.moveToHomeInSteps(0, 1, speed_in_steps_per_sec, MaxDistanceToMoveInSteps)
         dpiStepper.enableMotors(False)
         print("moved down")
+
+    # def rampSpeed
+    #     speed_in_steps_per_sec = int(self.ids.rampSpeed.value)
 
 # //////////////////////////////////
     def quit(self):
