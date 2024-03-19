@@ -121,7 +121,7 @@ class MainScreen(Screen):
         print("Run through one cycle of the perpetual motion machine")
         self.initialize()
         sleep(.01)
-        threading.Thread(target=self.runSensors).start()
+        self.runSensors()
     def setRampSpeed(self, speed):
         print("Set the ramp speed and update slider text")
         
@@ -242,17 +242,22 @@ class MainScreen(Screen):
         value = dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)
         dpiComputer.writeDigitalOut(dpiComputer.OUT_CONNECTOR__OUT_2, value)
         blah = 0
-        while blah < 10:
+        while blah < 3:
             blah + 1
             if (dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)):
-                sleep(10)
+                sleep(8)
                 if (dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)):  # a little debounce logic
                     print("Input 0 is HIGH")
             else:
                 print("Input 0 is LOW")
-                threading.Thread(target=self.rampUp).start()
-            if blah == 10:
-                print("no ball found. put one in and try again")
+                self.rampUp()
+                self.moveStairs()
+                self.rampDown()
+                self.stopStairs()
+                self.openGate()
+                self.closeGate()
+        if blah == 3:
+            print("no ball found. put one in and try again")
     def topSensor(self):
         value = dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_1)
         dpiComputer.writeDigitalOut(dpiComputer.OUT_CONNECTOR__OUT_2, value)
